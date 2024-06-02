@@ -12,6 +12,7 @@ import {
   Navigate
 } from 'react-router-dom'
 import Home from './pages/Home'
+import Review from './pages/Review'
 
 function App() {
   
@@ -21,9 +22,10 @@ function App() {
   <BrowserRouter>
   <Routes>
     <Route path='/'>
-      <Route index element={<Home/>}/>
+      <Route index element={<Review/>}/>
       <Route path='/signin' element={<SignIn/>}/>
       <Route path='/signup' element={<SignUp/>}/>
+      {/* <Route path='/review' element={<Review/>}/> */}
 
     </Route>
   </Routes>

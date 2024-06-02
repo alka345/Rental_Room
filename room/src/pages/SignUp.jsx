@@ -1,7 +1,9 @@
 import React, {useState} from 'react'
-import {createUserWithEmailAndPassword} from 'firebase/auth'
-import { auth } from '../firebase';
+import {createUserWithEmailAndPassword, updateProfile} from 'firebase/auth'
+import { auth, storage, db } from '../firebase';
+import {ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useNavigate, Link } from 'react-router-dom';
+import { doc, setDoc } from "firebase/firestore"; 
 
 function SignUp() {
     const [err, setErr] = useState(false);
@@ -19,6 +21,37 @@ function SignUp() {
         console.log(file);
         try {
             const res = await createUserWithEmailAndPassword(auth, email, password);
+            const storageRef = ref(storage, displayName);
+
+            await uploadBytesResumable(storageRef, file).then(()=>{
+            getDownloadURL(storageRef).then(async(downloadURL) => {
+            console.log('File available at', downloadURL);
+            
+            try {
+
+                await updateProfile(res.user, {
+                    displayName,
+                    photoURL: downloadURL
+                })
+                console.log(res.user);
+
+
+                
+                await setDoc(doc(db, "users", res.user.uid), {
+                  uid: res.user.uid,
+                  displayName,
+                  email,
+                  photoURL: downloadURL,
+                });
+
+                await setDoc(doc(db, "userChats", res.user.uid),{})
+                
+            } catch (err) {
+                setErr(true)
+                
+            }
+      });
+    })
             console.log(res);
             navigate("/")
         } catch (err) {
