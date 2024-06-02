@@ -1,18 +1,13 @@
 import React, {useState} from 'react'
 import {createUserWithEmailAndPassword} from 'firebase/auth'
 import { auth } from '../firebase';
+import { useNavigate, Link } from 'react-router-dom';
 
 function SignUp() {
     const [err, setErr] = useState(false);
+    const navigate = useNavigate()
     
     const handleSubmit = async (e) => {
-        try {
-            const res = await createUserWithEmailAndPassword(auth, email, password);
-            console.log(res);
-        } catch (err) {
-            console.log(err);
-            setErr(true)
-        }
         e.preventDefault();
         const displayName = e.target[0].value;
         console.log(displayName);
@@ -22,6 +17,14 @@ function SignUp() {
         console.log(password);
         const file = e.target[3].value;
         console.log(file);
+        try {
+            const res = await createUserWithEmailAndPassword(auth, email, password);
+            console.log(res);
+            navigate("/")
+        } catch (err) {
+            console.log(err);
+            setErr(true)
+        }
     }
   return (
     <div className="formContainer">
@@ -34,14 +37,16 @@ function SignUp() {
                 <input type="password" placeholder='password' />
                 <input style={{display: 'none'}}type="file" id='file' />
                 <label htmlFor="file">
-                    <img src="" alt="" />
+                    <img src="" alt="img" />
                 </label>
                 <button>Sign Up</button>
+                {err && <span>Something went wrong</span>}
             </form>
-            <p>You do have an account ?Sign In</p>
+            <p>You do have an account ?<Link to="/signin">Sign In</Link></p>
         </div>
     </div>
   )
 }
 
 export default SignUp
+  
